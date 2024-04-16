@@ -41,10 +41,10 @@ namespace dsp::filter {
 
             // Move existing data to make transition seemless
             if (_taps.size < oldTC) {
-                memcpy(buffer, &buffer[oldTC - _taps.size], (_taps.size - 1) * sizeof(D));
+                std::copy(buffer + oldTC - _taps.size, buffer + oldTC, buffer);
             }
             else if (_taps.size > oldTC) {
-                memcpy(&buffer[_taps.size - oldTC], buffer, (oldTC - 1) * sizeof(D));
+                std::copy(buffer, buffer + oldTC, buffer + _taps.size - oldTC);
                 buffer::clear<D>(buffer, _taps.size - oldTC);
             }
             
@@ -61,7 +61,7 @@ namespace dsp::filter {
 
         inline int process(int count, const D* in, D* out) {
             // Copy data to work buffer
-            memcpy(bufStart, in, count * sizeof(D));
+            std::copy(in, in + count, bufStart);
             
             // Do convolution
             for (int i = 0; i < count; i++) {
